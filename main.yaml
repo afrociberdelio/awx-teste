@@ -1,0 +1,21 @@
+---
+- name: Ping ICMP para um IP
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # padrão; você pode sobrescrever com -e target_ip=1.2.3.4
+    target_ip: "{{ lookup('env','TARGET_IP') | default('8.8.8.8') }}"
+  tasks:
+    - name: Executar ping ICMP (3 pacotes)
+      ansible.builtin.command: ping -c 3 {{ target_ip }}
+      register: ping_result
+      ignore_errors: true
+
+    - name: Mostrar resultado do ping
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines
+
+    - name: Falhar se o ping não conseguiu resposta
+      ansible.builtin.fail:
+        msg: "Host {{ target_ip }} inacessível via ICMP (ping retornou código {{ ping_result.rc }})."
+      when: ping_result.rc != 0
