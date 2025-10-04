@@ -8,7 +8,7 @@
     target_port: "{{ lookup('env','TARGET_PORT') | default(22)}}"
 
   tasks:
-    - name: Testar conectividade TCP na porta "{{ target_port }}"
+    - name: Testar conectividade TCP na porta {{ target_port }}
       ansible.builtin.wait_for:
         host: "{{ target_ip }}"
         port: "{{ target_port }}"
