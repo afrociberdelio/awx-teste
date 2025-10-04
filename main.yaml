@@ -11,7 +11,7 @@
     - name: Testar conectividade TCP na porta {{ target_port }}
       ansible.builtin.wait_for:
         host: "{{ target_ip }}"
-        port: "{{ target_port }}"
+        port: {{ target_port }}
         timeout: 5
 
     - name: Exibir resultado
