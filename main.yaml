@@ -1,21 +1,24 @@
 ---
-- name: Ping ICMP para um IP
+- name: "Ping TCP para um IP (porta 22)"
   hosts: localhost
   gather_facts: false
   vars:
-    # padrão; você pode sobrescrever com -e target_ip=1.2.3.4
+    # padrão; pode sobrescrever com: -e target_ip=1.2.3.4
     target_ip: "{{ lookup('env','TARGET_IP') | default('8.8.8.8') }}"
+
   tasks:
-    - name: Executar ping ICMP (3 pacotes)
-      ansible.builtin.command: ping -c 3 {{ target_ip }}
+    - name: Testar conectividade TCP na porta 22
+      ansible.builtin.wait_for:
+        host: "{{ target_ip }}"
+        port: 22
+        timeout: 5
       register: ping_result
-      ignore_errors: true
 
-    - name: Mostrar resultado do ping
-      ansible.builtin.debug:
-        var: ping_result.stdout_lines
+    - name: Exibir resultado
+      debug:
+        msg: "Conexão TCP para {{ target_ip }} bem-sucedida!"
 
-    - name: Falhar se o ping não conseguiu resposta
+    - name: Falhar se o host não respondeu na porta 22
       ansible.builtin.fail:
-        msg: "Host {{ target_ip }} inacessível via ICMP (ping retornou código {{ ping_result.rc }})."
-      when: ping_result.rc != 0
+        msg: "Host {{ target_ip }} inacessível via TCP (porta 22)."
+      when: not ping_result.elapsed or ping_result.failed is defined
