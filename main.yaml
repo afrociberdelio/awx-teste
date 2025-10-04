@@ -1,24 +1,19 @@
 ---
-- name: "Ping TCP para um IP (porta 22)"
+- name: "Teste de conexão TCP para um IP na porta ({{ target_port }})"
   hosts: localhost
   gather_facts: false
   vars:
-    # padrão; pode sobrescrever com: -e target_ip=1.2.3.4
+    # padrão; pode sobrescrever com: -e target_ip=1.2.3.4 -e target_port=22
     target_ip: "{{ lookup('env','TARGET_IP') | default('8.8.8.8') }}"
+    target_port: "{{ lookup('env','TARGET_PORT') | default('22')}}"
 
   tasks:
-    - name: Testar conectividade TCP na porta 22
+    - name: Testar conectividade TCP na porta "{{ target_port }}"
       ansible.builtin.wait_for:
         host: "{{ target_ip }}"
-        port: 22
+        port: "{{ target_port }}"
         timeout: 5
-      register: ping_result
 
     - name: Exibir resultado
       debug:
-        msg: "Conexão TCP para {{ target_ip }} bem-sucedida!"
-
-    - name: Falhar se o host não respondeu na porta 22
-      ansible.builtin.fail:
-        msg: "Host {{ target_ip }} inacessível via TCP (porta 22)."
-      when: ping_result.rc != 0
+        msg: "Conexão TCP para {{ target_ip }} na porta {{ target_port }} bem-sucedida!"
