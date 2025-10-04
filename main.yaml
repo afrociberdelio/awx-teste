@@ -21,4 +21,4 @@
     - name: Falhar se o host não respondeu na porta 22
       ansible.builtin.fail:
         msg: "Host {{ target_ip }} inacessível via TCP (porta 22)."
-      when: not ping_result.elapsed or ping_result.failed is defined
+      when: ping_result.rc != 0
