@@ -5,13 +5,13 @@
   vars:
     # padrão; pode sobrescrever com: -e target_ip=1.2.3.4 -e target_port=22
     target_ip: "{{ lookup('env','TARGET_IP') | default('8.8.8.8') }}"
-    target_port: "{{ lookup('env','TARGET_PORT') | default(22)}}"
+    target_port: "{{ lookup('env','TARGET_PORT') | default(22) | int }}"
 
   tasks:
     - name: Testar conectividade TCP na porta {{ target_port }}
       ansible.builtin.wait_for:
         host: "{{ target_ip }}"
-        port: {{ target_port }}
+        port: "{{ target_port }}"
         timeout: 5
 
     - name: Exibir resultado
